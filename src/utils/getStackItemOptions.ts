@@ -1,20 +1,11 @@
 import type { ToastStack, ToastStackItem, ToastOptions } from '../types';
 
-export default function <P>(
-  stackItem: ToastStackItem<P> | undefined,
-  stack: ToastStack<P>
-): ToastOptions {
-  const stackItemOption = <K extends keyof ToastOptions>(
-    key: K
-  ): ToastOptions[K] =>
-    stackItem?.component.modalOptions?.[key] ?? stackItem?.options?.[key];
+export default function <P>(stackItem: ToastStackItem<P> | undefined, stack: ToastStack<P>): ToastOptions {
+  const stackItemOption = <K extends keyof ToastOptions>(key: K): ToastOptions[K] =>
+    stackItem?.component.toastOptions?.[key] ?? stackItem?.options?.[key];
 
-  const extractOption = <K extends keyof ToastOptions>(
-    key: K
-  ): ToastOptions[K] =>
-    stackItem?.component.modalOptions?.[key] ??
-    stackItem?.options?.[key] ??
-    stack.defaultOptions[key];
+  const extractOption = <K extends keyof ToastOptions>(key: K): ToastOptions[K] =>
+    stackItem?.component.toastOptions?.[key] ?? stackItem?.options?.[key] ?? stack.defaultOptions[key];
 
   return {
     position: extractOption('position'),
@@ -34,11 +25,7 @@ export default function <P>(
      * for this check so that the default `animateIn/Out` wouldn't override the stackItem
      * specific `animateIn/OutConfig`.
      */
-    animationIn: stackItemOption('animateInConfig')
-      ? undefined
-      : extractOption('animationIn'),
-    animationOut: stackItemOption('animateOutConfig')
-      ? undefined
-      : extractOption('animationOut'),
+    animationIn: stackItemOption('animateInConfig') ? undefined : extractOption('animationIn'),
+    animationOut: stackItemOption('animateOutConfig') ? undefined : extractOption('animationOut'),
   };
 }
