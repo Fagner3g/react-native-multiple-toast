@@ -1,6 +1,6 @@
 {
   "name": "react-native-multiple-toast",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "for toast react-native",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
