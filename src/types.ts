@@ -84,13 +84,10 @@ export type ToastState<P> = Omit<ToastContextProvider<P>, 'currentToast' | 'stac
     params?: P[N];
     callback?: () => void;
   }) => void;
-  handleBackPress: () => boolean;
   init: <T>(updater: (currentState: ToastInternalState<T>) => ToastInternalState<T>) => ToastInternalState<T>;
   getState: <T>() => ToastInternalState<T>;
   setState: <T>(updater: (currentState: ToastInternalState<T>) => ToastInternalState<T>) => ToastInternalState<T>;
   subscribe: <T>(listener: ToastStateListener<T>, equalityFn?: ToastStateEqualityChecker<T>) => ToastStateSubscription<T>;
-  queueClosingAction: (action: Partial<ToastPendingClosingAction>) => ToastPendingClosingAction;
-  removeClosingAction: (action: ToastPendingClosingAction) => boolean;
 };
 
 export type ToastStateEqualityChecker<P> = (currentState: ToastInternalState<P>, newState: ToastInternalState<P>) => boolean;

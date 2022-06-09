@@ -7,5 +7,4 @@ export const defaultOptions: CustomDefaultOptions = {
 
 export { default as invariant } from './invariant';
 export { default as getStackItemData } from './getStackItemData';
-export { default as getStackItemOptions } from './getStackItemOptions';
 export { default as validateDefaultOptions } from './validateDefaultOptions';

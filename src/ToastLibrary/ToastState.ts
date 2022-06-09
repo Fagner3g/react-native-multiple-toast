@@ -6,12 +6,11 @@ import type {
   ToastContextProvider,
   ToastStateSubscription,
   ToastStateEqualityChecker,
-  ToastPendingClosingAction,
   ToastState as ToastStateType,
   ToastParams,
 } from '../types';
 
-import { invariant, getStackItemOptions, defaultOptions } from '../utils';
+import { invariant, defaultOptions } from '../utils';
 
 const createToastState = (): ToastStateType<any> => {
   let state: ToastInternalState<any> = {
@@ -213,86 +212,6 @@ const createToastState = (): ToastStateType<any> => {
     }));
   };
 
-  const handleBackPress = (): boolean => {
-    const { currentToast, stack } = getState();
-    const currentToastStackItem = Array.from(stack.openedItems).pop();
-    const { backBehavior } = getStackItemOptions(currentToastStackItem, stack);
-
-    if (currentToast) {
-      if (backBehavior === 'none') {
-        return true;
-      } else if (backBehavior === 'clear') {
-        queueClosingAction({ action: 'closeAllToasts' });
-        return true;
-      } else if (backBehavior === 'pop') {
-        queueClosingAction({ action: 'closeToast', toastName: currentToast });
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  const queueClosingAction = <P>({
-    action,
-    callback,
-    toastName,
-  }: ToastStateType<P>['queueClosingAction']['arguments']): ToastStateType<P>['queueClosingAction']['arguments'] => {
-    const {
-      stack: { names },
-    } = state;
-
-    if (action !== 'closeAllToasts' && toastName) {
-      invariant(
-        names.some((name) => name === toastName),
-        `'${toastName}' is not a valid toast name. Did you mean any of these: ${names.map((validName) => `\n• ${validName}`)}`
-      );
-    }
-
-    const hash = `${toastName ? `${toastName}_${action}` : action}_${Math.random().toString(36).substring(2, 11)}`;
-
-    const { pendingClosingActions } = setState((currentState) => ({
-      ...currentState,
-      stack: {
-        ...currentState.stack,
-        pendingClosingActions: currentState.stack.pendingClosingActions.add({
-          hash,
-          action,
-          callback,
-          toastName,
-          currentToastHash: [...currentState.stack.openedItems].slice(-1)[0]?.hash,
-        }),
-      },
-    })).stack;
-
-    return [...pendingClosingActions].slice(-1)[0];
-  };
-
-  const removeClosingAction = (action: ToastPendingClosingAction): boolean => {
-    const {
-      stack: { pendingClosingActions: oldPendingClosingActions },
-    } = state;
-
-    const newPendingClosingActions = new Set(oldPendingClosingActions);
-
-    if (newPendingClosingActions.has(action)) {
-      newPendingClosingActions.delete(action);
-    }
-
-    if (newPendingClosingActions.size !== oldPendingClosingActions.size) {
-      setState((currentState) => ({
-        ...currentState,
-        stack: {
-          ...currentState.stack,
-          pendingClosingActions: newPendingClosingActions,
-        },
-      }));
-      return true;
-    }
-
-    return false;
-  };
-
   return {
     init,
     setState,
@@ -303,85 +222,37 @@ const createToastState = (): ToastStateType<any> => {
     closeToast,
     closeToasts,
     closeAllToasts,
-    handleBackPress,
-    queueClosingAction,
-    removeClosingAction,
   };
 };
 
 const ToastState = createToastState();
 
 /**
- * Function that exposes Modalfy's API outside of React's context.
+ * Function that exposes toast's API outside of React's context.
  *
  * Note: Do not use if you're inside a React component.
- * Please consider `useModal()` or `withModal()` instead.
+ * Please consider `useToast()` or `withToast()` instead.
  *
- * @returns Object containing all the functions and variables of the usual `modal` prop.
+ * @returns Object containing all the functions and variables of the usual `toas` prop.
  *
  */
 export const toast = <P extends ToastParams, M extends Exclude<keyof P, symbol | number> = Exclude<keyof P, symbol | number>>() => ({
   /**
-   * This function closes every open modal.
+   * This value returns the current open toas (`null` if none).
    *
-   * @example modalfy().closeAllModals(() => console.log('All modals closed'))
-   *
-   */
-  closeAllToasts: (callback?: () => void) => {
-    ToastState.queueClosingAction({ action: 'closeAllToasts', callback });
-  },
-  /**
-   * This function closes the currently displayed modal by default.
-   *
-   * You can also provide a `modalName` if you want to close a different modal
-   * than the latest opened. This will only close the latest instance of that modal,
-   * see `closeModals()` if you want to close all instances.
-   *
-   * @example modalfy().closeModal('ExampleModal', () => console.log('Current modal closed'))
-   *
-   */
-  closeToast: (toastName?: M, callback?: () => void) => {
-    ToastState.queueClosingAction({
-      action: 'closeToast',
-      toastName,
-      callback,
-    });
-  },
-  /**
-   * This function closes all the instances of a given modal.
-   *
-   * You can use it whenever you have the same modal opened
-   * several times, to close all of them at once.
-   *
-   * @example modalfy().closeModals('ExampleModal', () => console.log('All ExampleModal modals closed'))
-   *
-   * @returns { boolean } Whether or not Modalfy found any open modal
-   * corresponding to `modalName` (and then closed them).
-   *
-   */
-  closeToasts: (toastName: M, callback?: () => void) => {
-    ToastState.queueClosingAction({
-      action: 'closeToasts',
-      toastName,
-      callback,
-    });
-  },
-  /**
-   * This value returns the current open modal (`null` if none).
-   *
-   * @example modalfy().currentModal
+   * @example toas().currentToast
    *
    */
   currentToast: ToastState.getState<P>()?.currentToast ?? null,
   /**
-   * This function opens a modal based on the provided `modalName`.
+   * This function opens a toast based on the provided `toastName`.
    *
-   * It will look at the stack passed to `<ModalProvider>` and add
-   * the corresponding component to the current stack of open modals.
+   * It will look at the stack passed to `<ToastProvider>` and add
+   * the corresponding component to the current stack of open Toasts.
    * Alternatively, you can also provide some `params` that will be
    * accessible to that component.
    *
-   * @example modalfy().openModal('PokédexEntryModal', { id: 619, name: 'Lin-Fu' }, () => console.log('PokédexEntryModal modal opened'))
+   * @example Toastfy().openToast('PokédexEntryToast', { id: 619, name: 'Lin-Fu' }, () => console.log('PokédexEntryToast Toast opened'))
    *
    */
   openToast: (toastName: M, params?: P[M], callback?: () => void) =>

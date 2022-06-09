@@ -3,7 +3,6 @@ import { useContext } from 'react';
 import type { ToastParams, UsableToastProp } from '../types';
 
 import ToastContext from './ToastContext';
-import { toast } from './ToastState';
 
 /**
  * Hook that exposes toast API.
@@ -13,7 +12,6 @@ import { toast } from './ToastState';
 
 export default function <P extends ToastParams>(): UsableToastProp<P> {
   const context = useContext(ToastContext) as UsableToastProp<P>;
-  const { closeToast, closeToasts, closeAllToasts } = toast<P>();
 
   return {
     /**
@@ -22,7 +20,7 @@ export default function <P extends ToastParams>(): UsableToastProp<P> {
      * @example toast.closeAllToasts(() => console.log('All Toasts closed'))
      *
      */
-    closeAllToasts: closeAllToasts as UsableToastProp<P>['closeAllToasts'],
+    closeAllToasts: () => {},
     /**
      * This function closes the currently displayed modal by default.
      *
@@ -33,7 +31,7 @@ export default function <P extends ToastParams>(): UsableToastProp<P> {
      * @example modal.closeToast('Example', () => console.log('Current modal closed'))
      *
      */
-    closeToast: closeToast as UsableToastProp<P>['closeToast'],
+    closeToast: context.closeToast,
     /**
      * This function closes all the instances of a given modal.
      *
@@ -46,7 +44,7 @@ export default function <P extends ToastParams>(): UsableToastProp<P> {
      * corresponding to `modalName` (and then closed them).
      *
      */
-    closeToasts: closeToasts as UsableToastProp<P>['closeToasts'],
+    closeToasts: context.closeToasts,
     /**
      * This value returns the current open modal (`null` if none).
      *
