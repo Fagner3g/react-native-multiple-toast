@@ -2,44 +2,17 @@ import type { ToastOptions } from '../types';
 
 import invariant from './invariant';
 
-export default function ({
-  position,
-  backBehavior,
-  backdropOpacity,
-  transitionOptions,
-  backdropAnimationDuration,
-}: ToastOptions = {}) {
+export default function ({ position, opacity, transitionOptions }: ToastOptions = {}) {
   invariant(
-    !backBehavior ||
-      (backBehavior && backBehavior === 'clear') ||
-      (backBehavior && backBehavior === 'none') ||
-      (backBehavior && backBehavior === 'pop'),
-    "backBehavior should either be 'pop', 'clear' or 'none' in createModalStack()"
+    !opacity || (opacity && typeof opacity === 'number' && opacity >= 0 && opacity <= 1),
+    'opacity should be a number between 0 and 1 in createModalStack()'
   );
   invariant(
-    !backdropOpacity ||
-      (backdropOpacity &&
-        typeof backdropOpacity === 'number' &&
-        backdropOpacity >= 0 &&
-        backdropOpacity <= 1),
-    'backdropOpacity should be a number between 0 and 1 in createModalStack()'
-  );
-  invariant(
-    !backdropAnimationDuration ||
-      (backdropAnimationDuration &&
-        typeof backdropAnimationDuration === 'number'),
-    'backdropAnimationDuration should be a number in createModalStack()'
-  );
-  invariant(
-    !position ||
-      (position && position === 'top') ||
-      (position && position === 'center') ||
-      (position && position === 'bottom'),
+    !position || (position && position === 'top') || (position && position === 'center') || (position && position === 'bottom'),
     "position should either be 'top', 'center' or 'bottom' in createModalStack()"
   );
   invariant(
-    !transitionOptions ||
-      (transitionOptions && typeof transitionOptions === 'function'),
+    !transitionOptions || (transitionOptions && typeof transitionOptions === 'function'),
     `transitionOptions should be a function. For instance:
       const defaultModalOptions = {
         transitionOptions: animatedValue => ({

@@ -3,41 +3,38 @@ import { isValidElementType } from 'react-is';
 
 import type { ToastOptions } from '../types';
 
-export default function <P>(
-  modalName: Exclude<keyof P, symbol | number>,
-  modalComponent: ComponentType<any> | ToastOptions
-) {
+export default function <P>(toastName: Exclude<keyof P, symbol | number>, toastComponent: ComponentType<any> | ToastOptions) {
   if (
-    ('modal' in modalComponent && !isValidElementType(modalComponent.modal)) ||
-    ('modal' in modalComponent === false && !isValidElementType(modalComponent))
+    ('toast' in toastComponent && !isValidElementType(toastComponent.toast)) ||
+    ('toast' in toastComponent === false && !isValidElementType(toastComponent))
   ) {
-    throw new Error(`The component for modal '${modalName}' must be a valid React component. For instance:
-      import MyModal from './MyModal';
+    throw new Error(`The component for toast '${toastName}' must be a valid React component. For instance:
+      import MyToast from './MyToast';
 
         ...
-        ${modalName}: MyModal,
+        ${toastName}: MyToast,
       }
 
       You can also use an object:
         ...
-        ${modalName}: {
-          modal: MyModal
+        ${toastName}: {
+          toast: MyToast
         },
       }`);
   }
 
   let options;
-  let modalObj;
+  let toastObj;
 
-  if ('modal' in modalComponent) {
-    const { modal, ...rest } = modalComponent;
-    modalObj = modal;
+  if ('toast' in toastComponent) {
+    const { toast, ...rest } = toastComponent;
+    toastObj = toast;
     options = rest;
   }
 
   return {
-    component: modalObj || modalComponent,
-    name: modalName,
+    component: toastObj || toastComponent,
+    name: toastName,
     options,
   };
 }

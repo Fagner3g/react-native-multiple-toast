@@ -1,5 +1,4 @@
 import React, { ReactNode, useState, useEffect, useRef } from 'react';
-import { BackHandler } from 'react-native';
 import type {
   SharedProps,
   ToastContextProvider,
@@ -28,13 +27,7 @@ const ToastProvider = ({ children, stack }: Props) => {
   const toastStateSubscription = useRef<ToastStateSubscription<any> | undefined>();
 
   const openToast: SharedProps<any>['openToast'] = (toastName, params, callback) => {
-    const { currentToast } = ToastState.getState();
-
-    if (!currentToast) {
-      BackHandler.addEventListener('hardwareBackPress', ToastState.handleBackPress);
-    }
-
-    ToastState.openToast({ toastName, params, callback, isCalledOutsideOfContext: true });
+    ToastState.openToast({ toastName, params, callback });
   };
 
   const getParam: SharedProps<any>['getParam'] = (hash, paramName, defaultValue) => ToastState.getParam(hash, paramName, defaultValue);

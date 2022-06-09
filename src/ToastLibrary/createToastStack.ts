@@ -1,4 +1,4 @@
-import type { ToastStack, ToastStackConfig, ToastOptions } from '../types';
+import type { ToastStack, ToastStackConfig, CustomDefaultOptions } from '../types';
 
 import { invariant, defaultOptions, getStackItemData, validateDefaultOptions } from '../utils';
 
@@ -6,11 +6,11 @@ import { invariant, defaultOptions, getStackItemData, validateDefaultOptions } f
  * `createToastStack()` is the function that's going to turn your configuration into a usable Toast stack.
  *
  * @argument { ToastStackConfig } config - Toast stack configuration.
- * @argument { ToastOptions } [customDefaultOptions] - Configuration options to apply to all Toasts by default (optional).
+ * @argument { CustomDefaultOptions } [customDefaultOptions] - Configuration options to apply to all Toasts by default (optional).
  *
  * @returns { ToastStack } Toast stack configuration object to provide to `<ToastProvider>`'s `stack` prop.
  */
-export default function <P>(config: ToastStackConfig, customDefaultOptions?: ToastOptions): ToastStack<P> {
+export default function <P>(config: ToastStackConfig, customDefaultOptions?: CustomDefaultOptions): ToastStack<P> {
   invariant(config, 'You need to provide a config to createToastStack()');
   validateDefaultOptions(customDefaultOptions);
 
@@ -23,8 +23,6 @@ export default function <P>(config: ToastStackConfig, customDefaultOptions?: Toa
     },
     openedItemsSize: 0,
     openedItems: new Set(),
-    pendingClosingActionsSize: 0,
-    pendingClosingActions: new Set(),
   };
 
   return Object.entries(config).reduce<ToastStack<P>>((output, entry, index): ToastStack<P> => {

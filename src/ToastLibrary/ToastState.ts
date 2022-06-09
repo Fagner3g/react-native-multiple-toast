@@ -1,5 +1,3 @@
-import { BackHandler } from 'react-native';
-
 import type {
   ToastStackItem,
   ToastStateListener,
@@ -24,8 +22,6 @@ const createToastState = (): ToastStateType<any> => {
       defaultOptions,
       openedItemsSize: 0,
       openedItems: new Set(),
-      pendingClosingActionsSize: 0,
-      pendingClosingActions: new Set(),
     },
   };
   let stateListeners: Set<() => void> = new Set();
@@ -37,7 +33,6 @@ const createToastState = (): ToastStateType<any> => {
       stack: {
         ...newState.stack,
         openedItemsSize: newState.stack.openedItems.size,
-        pendingClosingActionsSize: newState.stack.pendingClosingActions.size,
       },
     };
     stateListeners.forEach((stateListener) => stateListener());
@@ -86,14 +81,9 @@ const createToastState = (): ToastStateType<any> => {
     return addStateSubscriber(createStateSubscriber(stateListener, equalityFn));
   };
 
-  const openToast = <P>(props: {
-    toastName: Exclude<keyof P, symbol | number>;
-    params?: P;
-    isCalledOutsideOfContext?: boolean;
-    callback?: () => void;
-  }) => {
-    const { toastName, params, isCalledOutsideOfContext, callback } = props;
-    const { stack, currentToast } = state;
+  const openToast = <P>(props: { toastName: Exclude<keyof P, symbol | number>; params?: P; callback?: () => void }) => {
+    const { toastName, params, callback } = props;
+    const { stack } = state;
     const { content, names } = stack;
 
     invariant(toastName, "You didn't pass any toast name");
@@ -105,10 +95,6 @@ const createToastState = (): ToastStateType<any> => {
     const stackItem = content.find((item) => item.name === toastName);
     const hash = `${toastName}_${Math.random().toString(36).substring(2, 11)}`;
 
-    if (!currentToast && isCalledOutsideOfContext) {
-      BackHandler.addEventListener('hardwareBackPress', handleBackPress);
-    }
-
     setState<P>((currentState) => ({
       currentToast: toastName,
       stack: {
@@ -117,6 +103,7 @@ const createToastState = (): ToastStateType<any> => {
           Object.assign({}, stackItem, {
             hash,
             callback,
+            defaultOptions: stack.defaultOptions,
             ...(params && { params }),
           })
         ),
@@ -402,7 +389,6 @@ export const toast = <P extends ToastParams, M extends Exclude<keyof P, symbol |
       toastName,
       params,
       callback,
-      isCalledOutsideOfContext: true,
     }),
 });
 

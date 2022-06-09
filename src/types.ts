@@ -1,8 +1,12 @@
 import type { ComponentType } from 'react';
 
 export type ToastParams = { [key: string]: any };
-
 export type ToastOptions = { [key: string]: any };
+
+export type CustomDefaultOptions = {
+  duration?: number;
+  position?: 'top' | 'bottom';
+};
 
 export interface ToastStack<P extends ToastParams> {
   names: Array<Exclude<keyof P, symbol | number>>;
@@ -10,8 +14,6 @@ export interface ToastStack<P extends ToastParams> {
   defaultOptions: ToastOptions;
   openedItems: Set<ToastStackItem<P>>;
   openedItemsSize: number;
-  pendingClosingActions: Set<ToastPendingClosingAction>;
-  pendingClosingActionsSize: number;
 }
 
 export interface ToastStackItem<P extends ToastParams> {
@@ -19,7 +21,8 @@ export interface ToastStackItem<P extends ToastParams> {
   component: ComponentType<any> & { toastOptions?: ToastOptions };
   hash: string;
   index: number;
-  options?: ToastOptions;
+  options?: CustomDefaultOptions;
+  defaultOptions: CustomDefaultOptions;
   params?: any;
   callback?: () => void;
 }
@@ -79,7 +82,6 @@ export type ToastState<P> = Omit<ToastContextProvider<P>, 'currentToast' | 'stac
   openToast: <M extends Exclude<keyof P, symbol | number>, N extends M>(args: {
     toastName: N;
     params?: P[N];
-    isCalledOutsideOfContext?: boolean;
     callback?: () => void;
   }) => void;
   handleBackPress: () => boolean;
