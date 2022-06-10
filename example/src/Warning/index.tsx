@@ -3,9 +3,9 @@ import { Button, StyleSheet, Text, View } from 'react-native';
 import { ToastComponentProp } from '../../../src';
 import { ToastStackParamsList } from '../App';
 
-export const Warning = ({ toast }: ToastComponentProp<ToastStackParamsList, void, 'Success'>) => {
-  const { closeToast, params } = toast;
-  console.log(params);
+export const Warning = (props: ToastComponentProp<ToastStackParamsList, void, 'Success'>) => {
+  const { closeToast, params } = props.toast;
+  console.log(props.toast.closeAllToasts);
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{`Teste: ${params}`}</Text>

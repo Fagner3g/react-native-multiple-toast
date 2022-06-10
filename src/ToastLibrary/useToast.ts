@@ -22,30 +22,6 @@ export default function <P extends ToastParams>(): UsableToastProp<P> {
      */
     closeAllToasts: () => {},
     /**
-     * This function closes the currently displayed modal by default.
-     *
-     * You can also provide a `modalName` if you want to close a different modal
-     * than the latest opened. This will only close the latest instance of that modal,
-     * see `closeToast()` if you want to close all instances.
-     *
-     * @example modal.closeToast('Example', () => console.log('Current modal closed'))
-     *
-     */
-    closeToast: context.closeToast,
-    /**
-     * This function closes all the instances of a given modal.
-     *
-     * You can use it whenever you have the same modal opened
-     * several times, to close all of them at once.
-     *
-     * @example modal.closeModals('ExampleModal', () => console.log('All ExampleModal modals closed'))
-     *
-     * @returns { boolean } Whether or not Modalfy found any open modal
-     * corresponding to `modalName` (and then closed them).
-     *
-     */
-    closeToasts: context.closeToasts,
-    /**
      * This value returns the current open modal (`null` if none).
      *
      * @example modal.currentModal

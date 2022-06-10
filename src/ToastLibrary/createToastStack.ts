@@ -1,6 +1,6 @@
 import type { ToastStack, ToastStackConfig, CustomDefaultOptions } from '../types';
 
-import { invariant, defaultOptions, getStackItemData, validateDefaultOptions } from '../utils';
+import { invariant, defaultOptions, getStackItemData } from '../utils';
 
 /**
  * `createToastStack()` is the function that's going to turn your configuration into a usable Toast stack.
@@ -12,7 +12,6 @@ import { invariant, defaultOptions, getStackItemData, validateDefaultOptions } f
  */
 export default function <P>(config: ToastStackConfig, customDefaultOptions?: CustomDefaultOptions): ToastStack<P> {
   invariant(config, 'You need to provide a config to createToastStack()');
-  validateDefaultOptions(customDefaultOptions);
 
   const initialStack: ToastStack<P> = {
     names: [],

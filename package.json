@@ -46,6 +46,9 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
+  "dependencies": {
+    "react-is": "^17.0.2"
+  },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
     "@react-native-community/eslint-config": "^2.0.0",
@@ -145,8 +148,5 @@
         }
       ]
     ]
-  },
-  "dependencies": {
-    "react-is": "^18.1.0"
   }
 }

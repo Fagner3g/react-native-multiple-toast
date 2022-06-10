@@ -8,7 +8,7 @@ type Props<P> = SharedProps<P> & {
 
 const StackItem = <P extends ToastParams>(props: Props<P>) => {
   const { stackItem, closeToast } = props;
-  const Component = stackItem.component;
+  const Components = stackItem.component;
   const opacity = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(-20)).current;
   const scale = useRef(new Animated.Value(1)).current;
@@ -33,19 +33,21 @@ const StackItem = <P extends ToastParams>(props: Props<P>) => {
     }, 700);
   }, []);
 
-  return (
-    <SafeAreaView style={{ elevation: 100, zIndex: 100 }}>
+  const renderItem = () => {
+    return (
       <Animated.View style={{ opacity, transform: [{ translateY }, { scale }] }} key={stackItem.hash}>
         {/* @ts-ignore */}
-        <Component
+        <Components
           toast={{
             closeToast: () => closeCurrentToast(stackItem),
             params: stackItem.params,
           }}
         />
       </Animated.View>
-    </SafeAreaView>
-  );
+    );
+  };
+
+  return <SafeAreaView style={{ elevation: 100, zIndex: 100 }}>{renderItem()}</SafeAreaView>;
 };
 
 export default StackItem;

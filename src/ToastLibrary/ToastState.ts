@@ -170,37 +170,6 @@ const createToastState = (): ToastStateType<any> => {
     }));
   };
 
-  const closeToasts = <P>(toastName: Exclude<keyof P, symbol>): boolean => {
-    const {
-      stack: { openedItems: oldOpenedItems, names },
-    } = state;
-
-    invariant(toastName, "You didn't pass any toast name to closeToast()");
-    invariant(
-      names.some((name) => name === toastName),
-      `'${toastName}' is not a valid toast name. Did you mean any of these: ${names.map((validName) => `\n• ${String(validName)}`)}`
-    );
-
-    const newOpenedItems = new Set(oldOpenedItems);
-
-    newOpenedItems.forEach((item) => {
-      if (item.name === toastName) {
-        newOpenedItems.delete(item);
-      }
-    });
-
-    if (newOpenedItems.size !== oldOpenedItems.size) {
-      const openedItemsArray = Array.from(newOpenedItems);
-      setState((currentState) => ({
-        currentToast: openedItemsArray?.[openedItemsArray?.length - 1]?.name,
-        stack: { ...currentState.stack, openedItems: newOpenedItems },
-      }));
-      return true;
-    }
-
-    return false;
-  };
-
   const closeAllToasts = () => {
     const { openedItems } = state.stack;
 
@@ -220,7 +189,6 @@ const createToastState = (): ToastStateType<any> => {
     openToast,
     subscribe,
     closeToast,
-    closeToasts,
     closeAllToasts,
   };
 };

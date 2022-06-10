@@ -1,7 +1,6 @@
 import type { ComponentType } from 'react';
 
 export type ToastParams = { [key: string]: any };
-export type ToastOptions = { [key: string]: any };
 
 export type CustomDefaultOptions = {
   duration?: number;
@@ -23,16 +22,6 @@ export interface ToastStackItem<P extends ToastParams> {
   index: number;
   options?: CustomDefaultOptions;
   defaultOptions: CustomDefaultOptions;
-  params?: any;
-  callback?: () => void;
-}
-
-export interface ToastStackType<P extends ToastParams> {
-  name: Exclude<keyof P, symbol | number>;
-  component: ComponentType<any> & { toastOptions?: ToastOptions };
-  hash: string;
-  index: number;
-  options?: ToastOptions;
   params?: any;
   callback?: () => void;
 }
@@ -66,7 +55,6 @@ export interface ToastContextProvider<
   currentToast: M | null;
   closeAllToasts: (callback?: () => void) => void;
   closeToast: (stackItem?: M | ToastStackItem<P>, callback?: () => void) => void;
-  closeToasts: (toastName: M, callback?: () => void) => boolean;
   getParam: <N extends keyof P[M], D extends P[M][N]>(
     hash: ToastStackItem<P>['hash'],
     paramName: N,
@@ -120,12 +108,7 @@ export type ToastClosingActionName = 'closeToast' | 'closeToasts' | 'closeAllToa
 export type ToastClosingActionOrigin = 'default' | 'fling' | 'backdrop';
 export type ToastEventListener = { remove: () => boolean };
 
-export type UsableToastProp<P extends ToastParams> = Pick<
-  ToastContextProvider<P>,
-  'closeAllToasts' | 'closeToasts' | 'currentToast' | 'openToast'
-> & {
-  closeToast: (toastName?: Exclude<keyof P, symbol | number>, callback?: () => void) => void;
-};
+export type UsableToastProp<P extends ToastParams> = Pick<ToastContextProvider<P>, 'closeAllToasts' | 'currentToast' | 'openToast'> & {};
 
 export interface ToastStackConfig {
   [key: string]: ComponentType<any> | ToastOptions;
@@ -133,10 +116,8 @@ export interface ToastStackConfig {
 
 export interface UsableToastComponentProp<P extends ToastParams, M extends keyof P>
   extends Omit<ToastContextProvider<P>, 'closeToast' | 'stack' | 'getParam'> {
-  addListener: ToastListener;
   closeToast: (toastlName?: M, callback?: () => void) => void;
   getParam: <N extends keyof P[M], D extends P[M][N]>(paramName: N, defaultValue?: D) => D extends P[M][N] ? P[M][N] : undefined;
-  removeAllListeners: () => void;
   params?: P[M];
 }
 
@@ -159,3 +140,26 @@ export type ToastComponentProp<P extends ToastParams, Props = unknown, M extends
    */
   toast: UsableToastComponentProp<P, M>;
 };
+
+export interface ToastOptions {
+  /**
+   * React component that will be rendered when you'll open the toast.
+   *
+   * Note: only needed when you're using this inside createToastStack() 1st argument.
+   *
+   * @default -
+   */
+  toast?: ComponentType<any>;
+  /**
+   * Vertical positioning of the toast.
+   *
+   * @default 'center'
+   */
+  position?: 'top' | 'bottom';
+  /**
+   * Duration of toast.
+   *
+   * @default 4000ms
+   */
+  duration?: number;
+}

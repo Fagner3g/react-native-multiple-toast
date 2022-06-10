@@ -4,7 +4,7 @@ import type { SharedProps, ToastParams } from 'src/types';
 import StackItem from './StackItem';
 
 type Props<P> = SharedProps<P>;
-const ToastStack = <P extends ToastParams>(props: Props<P>): Element | any => {
+const ToastStack = <P extends ToastParams>(props: Props<P>) => {
   const { stack } = props;
 
   if (!stack.defaultOptions) {

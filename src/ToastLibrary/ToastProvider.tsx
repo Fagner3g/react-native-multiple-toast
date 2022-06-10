@@ -34,8 +34,6 @@ const ToastProvider = ({ children, stack }: Props) => {
 
   const closeToast: SharedProps<any>['closeToast'] = (stackItem) => ToastState.closeToast(stackItem);
 
-  const closeToasts: SharedProps<any>['closeToasts'] = (modalName) => ToastState.closeToasts(modalName);
-
   const closeAllToasts: SharedProps<any>['closeAllToasts'] = () => ToastState.closeAllToasts();
 
   const [contextValue, setContextValue] = useState<ToastContextProvider<any, any>>({
@@ -43,7 +41,6 @@ const ToastProvider = ({ children, stack }: Props) => {
     getParam,
     openToast,
     closeToast,
-    closeToasts,
     closeAllToasts,
     currentToast: null,
   });
