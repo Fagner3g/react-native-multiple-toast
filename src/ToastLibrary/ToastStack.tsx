@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   bottom: {
     position: 'absolute',
     width: '100%',
-    bottom: 0,
+    bottom: 20,
   },
 });
 
